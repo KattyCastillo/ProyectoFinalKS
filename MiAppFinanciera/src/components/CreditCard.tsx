@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 
 interface CreditCardProps {
+  bankName: string;
   cardNumber: string;
   cardHolder: string;
   expiryDate: string;
@@ -17,6 +18,7 @@ interface CreditCardProps {
 }
 
 const CreditCard: React.FC<CreditCardProps> = ({
+  bankName,
   cardNumber,
   cardHolder,
   expiryDate,
@@ -35,7 +37,7 @@ const CreditCard: React.FC<CreditCardProps> = ({
       activeOpacity={0.8}
     >
       <View style={styles.header}>
-        <Text style={styles.bankName}>MiApp Bank</Text>
+        <Text style={styles.bankName}>{bankName}</Text>
         <Text style={styles.cardType}>VISA</Text>
       </View>
 
@@ -69,7 +71,7 @@ const CreditCard: React.FC<CreditCardProps> = ({
 
       <View style={styles.balanceInfo}>
         <Text style={styles.balanceText}>
-          ${balance.toFixed(2)} de ${limit.toFixed(2)}
+          L {balance.toFixed(2)} de L {limit.toFixed(2)}
         </Text>
       </View>
     </TouchableOpacity>

@@ -53,7 +53,7 @@ const TransactionCard: React.FC<TransactionCardProps> = ({
           <Text style={styles.date}>{date}</Text>
         </View>
       </View>
-      <Text style={styles.amount}>${amount.toFixed(2)}</Text>
+      <Text style={styles.amount}>L {amount.toFixed(2)}</Text>
     </TouchableOpacity>
   );
 };

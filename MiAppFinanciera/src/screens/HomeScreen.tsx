@@ -51,13 +51,14 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
         <View style={styles.balanceContainer}>
           <Text style={styles.balanceLabel}>{t('totalBalance')}</Text>
-          <Text style={styles.balanceAmount}>${totalBalance.toFixed(2)}</Text>
+          <Text style={styles.balanceAmount}>L {totalBalance.toFixed(2)}</Text>
         </View>
 
         <SectionTitle title={t('myCards')} />
         {cards.map((card) => (
           <CreditCard
             key={card.id}
+            bankName={card.bankName}
             cardNumber={card.cardNumber}
             cardHolder={card.cardHolder}
             expiryDate={card.expiryDate}

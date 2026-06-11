@@ -32,7 +32,7 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) => {
   const handleToggleLanguage = () => {
     const newLanguage = language === 'es' ? 'en' : 'es';
     setLanguage(newLanguage);
-    Alert.alert('Idioma', `Idioma cambiado a ${newLanguage === 'es' ? 'Español' : 'English'}`);
+    Alert.alert('Idioma', `Idioma cambiado a L {newLanguage === 'es' ? 'Español' : 'English'}`);
   };
 
   const handleLogout = () => {

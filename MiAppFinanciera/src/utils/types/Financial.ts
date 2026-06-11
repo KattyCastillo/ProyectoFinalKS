@@ -1,5 +1,14 @@
+export interface MerchantDiscount {
+  merchantName: string;
+  discountRate: number; // Ejemplo: 0.10 para 10%
+  maxDiscountPerMonth?: number; // Límite de ahorro total para este comercio
+  currentMonthDiscount?: number; // Lo que se ha ahorrado este mes en este comercio
+  applicableDays?: number[]; // Días específicos (ej: [15, 30]). Si está vacío, aplica siempre.
+}
+
 export interface CreditCard {
   id: string;
+  bankName: string;
   cardNumber: string;
   cardHolder: string;
   expiryDate: string;
@@ -8,8 +17,13 @@ export interface CreditCard {
   limit: number;
   issuer: string;
   points: number;
-  milles: number;
+  miles: number;
   cashback: number;
+  pointsToLpsFactor?: number;
+  cashbackRate?: number;
+  maxMonthlyCashback?: number;
+  currentMonthCashback?: number;
+  merchantDiscounts?: MerchantDiscount[];
   cutoffDate: number;
   dueDate: number;
 }

@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useEffect, useCallback } from 'react';
 import { Alert } from 'react-native';
 import { useAppDispatch } from '../store/hooks';
 import { setToken } from '../store/slices/authSlice';
@@ -6,6 +6,7 @@ import { supabase } from '../services/supabase';
 
 interface AuthContextType {
   isLoggedIn: boolean;
+  isLoading: boolean;
   user: { id: string; email: string; firstName: string } | null;
   login: (email: string, password: string) => Promise<void>;
   register: (
@@ -26,44 +27,68 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     email: string;
     firstName: string;
   } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const dispatch = useAppDispatch();
 
   const isLoggedIn = !!user;
 
-  useEffect(() => {
-    // Escuchar cambios en la sesión de Supabase al montar el componente
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session && session.user) {
-        setUser({
-          id: session.user.id,
-          email: session.user.email || '',
-          firstName: session.user.user_metadata?.firstName || session.user.email?.split('@')[0] || '',
-        });
+  const handleSession = useCallback((session: any) => {
+    console.log("AuthContext: handleSession ->", session ? `Usuario: ${session.user.email}` : "Sin sesión");
+    
+    if (session?.user) {
+      setUser({
+        id: session.user.id,
+        email: session.user.email || '',
+        firstName: session.user.user_metadata?.firstName || session.user.email?.split('@')[0] || '',
+      });
+      if (session.access_token) {
         dispatch(setToken(session.access_token));
-      } else {
-        setUser(null);
-        dispatch(setToken(null));
       }
+    } else {
+      setUser(null);
+      dispatch(setToken(null));
+    }
+    setIsLoading(false);
+  }, [dispatch]);
+
+  useEffect(() => {
+    // Obtener sesión inicial y escuchar cambios
+    const initializeAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      handleSession(session);
+    };
+
+    initializeAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      handleSession(session);
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [dispatch]);
+  }, [handleSession]);
 
   const login = async (email: string, password: string) => {
+    setIsLoading(true);
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
     if (error) {
-      Alert.alert('Error al iniciar sesión', error.message);
+      console.error("AuthContext: Login error:", error.message);
+      setIsLoading(false);
+      if (error.message.includes("Email not confirmed")) {
+        Alert.alert('Verifica tu correo', 'Tu email no ha sido confirmado. Por favor, revisa tu bandeja de entrada para el enlace de confirmación.');
+      } else {
+        Alert.alert('Error al iniciar sesión', error.message);
+      }
       return;
     }
 
     if (data.session) {
-      dispatch(setToken(data.session.access_token));
+      handleSession(data.session);
     }
   };
 
@@ -74,6 +99,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     lastName: string,
     phone: string
   ) => {
+    setIsLoading(true);
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -87,12 +113,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
 
     if (error) {
+      console.error("AuthContext: Register error:", error.message);
+      setIsLoading(false);
       Alert.alert('Error al registrarse', error.message);
       return;
     }
 
     if (data.session) {
-      dispatch(setToken(data.session.access_token));
+      handleSession(data.session);
+    } else {
+      setIsLoading(false);
+      Alert.alert('Registro exitoso', 'Por favor verifica tu correo electrónico para iniciar sesión.');
     }
   };
 
@@ -101,7 +132,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, user, login, register, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, isLoading, user, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -77,7 +77,7 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
         formData.phone
       );
       Alert.alert('Éxito', 'Cuenta creada correctamente');
-      navigation.navigate('Home');
+     // navigation.navigate('Home');
     }
   };
 

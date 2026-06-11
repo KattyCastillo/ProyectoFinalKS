@@ -51,7 +51,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
       if (validateForm()) {
       await login(formData.email, formData.password);
       Alert.alert('Éxito', 'Sesión iniciada correctamente');
-      // navigation.navigate('Home');
+      //navigation.navigate('Home');
     }
     } catch (error) {
        console.error(error);

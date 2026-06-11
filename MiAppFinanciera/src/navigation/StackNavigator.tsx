@@ -2,7 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Text } from 'react-native';
+import { Text, View, ActivityIndicator } from 'react-native';
 
 // Screens
 import LoginScreen from '../screens/LoginScreen';
@@ -208,8 +208,19 @@ const AppTabs = () => {
 };
 
 const RootNavigator = () => {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, isLoading } = useAuth();
   const { theme } = useTheme();
+
+  console.log("RootNavigator: Renderizando. isLoggedIn:", isLoggedIn, "isLoading:", isLoading);
+
+  // Mientras se verifica la sesión inicial, mostramos una pantalla de carga
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.background }}>
+        <ActivityIndicator size="large" color="#2E7D32" />
+      </View>
+    );
+  }
 
   return (
     <NavigationContainer>

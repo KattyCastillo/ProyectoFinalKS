@@ -1,10 +1,9 @@
-import React from 'react';
 import { Provider } from 'react-redux';
-import { store } from './src/store';
 import { AuthProvider } from './src/contexts/AuthContext';
 import { ThemeProvider } from './src/contexts/ThemeContext';
 import { LanguageProvider } from './src/contexts/LanguageContext';
 import RootNavigator from './src/navigation/StackNavigator';
+import { store } from './src/store';
 
 const App = () => {
   return (
